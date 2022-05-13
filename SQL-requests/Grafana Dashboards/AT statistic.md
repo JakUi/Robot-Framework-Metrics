@@ -12,7 +12,7 @@ SELECT COUNT(pipeline_id)/70*100 FROM pipelines_results WHERE branch_name = 'mas
 AND created_at BETWEEN (FROM_UNIXTIME(unix_timestamp(now()) - 604800)) AND FROM_UNIXTIME(unix_timestamp(now()))
 ```
 
-### Graph Job success rate (passed to fail) in one pipeline by a week
+### Graph `Job success rate (passed to fail) in one pipeline by a week`
 
 #### Block A
 
@@ -35,7 +35,7 @@ GROUP BY pipeline_id) f
 ON p.pipeline_id = f.pipeline_id)) t;
 ```
 
-### Table How many times test/keyword failed (by a week)
+### Table `How many times test/keyword failed (by a week)`
 
 ### Block A
 
