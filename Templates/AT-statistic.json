@@ -1,0 +1,493 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 33,
+  "links": [],
+  "panels": [
+    {
+      "cacheTimeout": null,
+      "datasource": "Tests Results",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 30
+              },
+              {
+                "color": "green",
+                "value": 50
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 8,
+      "interval": null,
+      "links": [],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "7.3.0",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(pipeline_id)/70*100 FROM pipelines_results WHERE branch_name = 'master' AND pipeline_status = 'PASSED' AND created_at BETWEEN (FROM_UNIXTIME(unix_timestamp(now()) - 604800)) AND FROM_UNIXTIME(unix_timestamp(now()))",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "pipelines_results",
+          "timeColumn": "created_at",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Pipelines success rate (passed to total) by a week",
+      "type": "gauge"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "cacheTimeout": null,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Tests Results",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 30
+              },
+              {
+                "color": "green",
+                "value": 50
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 9,
+      "interval": null,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "hide": false,
+          "metricColumn": "job_status",
+          "rawQuery": true,
+          "rawSql": "SELECT time, (t.p_cnt / (t.p_cnt + t.f_cnt)) * 100 AS ratio \nFROM\n((SELECT p.cnt AS p_cnt, f.cnt AS f_cnt, p.time, p.pipeline_id\nFROM (\nSELECT COUNT(job_name) AS cnt, created_at AS 'time', pipeline_id \nFROM jobs_results LEFT JOIN pipelines_results USING(pipeline_id, branch_name)\nWHERE branch_name = 'master' AND created_at IS NOT NULL AND job_status = 'PASS' AND\ncreated_at BETWEEN (from_unixtime(unix_timestamp(now()) - 604800)) AND from_unixtime(unix_timestamp(now()))\nGROUP BY pipeline_id) p\nJOIN (\nSELECT COUNT(job_name) AS cnt, created_at AS 'time', pipeline_id\nFROM jobs_results LEFT JOIN pipelines_results USING(pipeline_id, branch_name)\nWHERE branch_name = 'master' AND created_at IS NOT NULL AND job_status = 'FAIL' AND\ncreated_at BETWEEN (from_unixtime(unix_timestamp(now()) - 604800)) AND from_unixtime(unix_timestamp(now()))\nGROUP BY pipeline_id) f\nON p.pipeline_id = f.pipeline_id)) t;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "pipeline_id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "jobs_results",
+          "timeColumn": "pipeline_id",
+          "timeColumnType": "int",
+          "where": []
+        },
+        {
+          "format": "table",
+          "group": [],
+          "hide": true,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT (t.p_cnt / (t.p_cnt + t.f_cnt)) * 100 AS ratio \nFROM\n((SELECT p.cnt AS p_cnt, f.cnt AS f_cnt, p.time, p.pipeline_id\nFROM (\nSELECT COUNT(job_name) AS cnt, created_at AS 'time', pipeline_id \nFROM jobs_results LEFT JOIN pipelines_results USING(pipeline_id, branch_name)\nWHERE branch_name = 'master' AND created_at IS NOT NULL AND job_status = 'PASS' AND\ncreated_at BETWEEN (from_unixtime(unix_timestamp(now()) - 604800)) AND from_unixtime(unix_timestamp(now()))\nGROUP BY pipeline_id) p\nJOIN (\nSELECT COUNT(job_name) AS cnt, created_at AS 'time', pipeline_id\nFROM jobs_results LEFT JOIN pipelines_results USING(pipeline_id, branch_name)\nWHERE branch_name = 'master' AND created_at IS NOT NULL AND job_status = 'FAIL' AND\ncreated_at BETWEEN (from_unixtime(unix_timestamp(now()) - 604800)) AND from_unixtime(unix_timestamp(now()))\nGROUP BY pipeline_id) f\nON p.pipeline_id = f.pipeline_id)) t;",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "pipelines_results",
+          "timeColumn": "created_at",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Job success rate (passed to fail) in one pipeline by a week",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "datasource": "Tests Results",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlRd"
+          },
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 70
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "test_name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 680
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Number of FAILs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 167
+              },
+              {
+                "id": "custom.align",
+                "value": "center"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Percentage of all pipeline runs"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 236
+              },
+              {
+                "id": "custom.align",
+                "value": "center"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Number of FAILs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 138
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Percentage of all pipeline runs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 304
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Keyword name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 549
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Error message"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 932
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 23,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 6,
+      "options": {
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "7.3.0",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT test_name AS 'Test name', COUNT(test_name) AS 'Number of FAILs', ((COUNT(test_name) / (SELECT COUNT(DISTINCT pipeline_id)\r\nFROM results \r\nWHERE branch_name = 'master'\r\nAND started_at BETWEEN (unix_timestamp(now()) - 604800) AND unix_timestamp(now()))) * 100) AS 'Percentage of all pipeline runs'\r\nFROM\r\n(SELECT pipeline_id, test_name, MAX(id), test_status\r\nFROM results\r\nWHERE branch_name = 'master' AND started_at BETWEEN (unix_timestamp(now()) - 604800) AND unix_timestamp(now()) AND test_status = 'FAIL'\r\nGROUP BY test_name, pipeline_id\r\nORDER BY pipeline_id, test_name, id) tmp\r\nGROUP BY test_name\r\nORDER BY count(test_name) DESC\r\nlimit 100;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT keyword_name AS 'Keyword name', test_message AS 'Error message', COUNT(keyword_name) AS 'Number of FAILs',\r\n((COUNT(keyword_name) / (SELECT COUNT(DISTINCT pipeline_id)\r\nFROM results \r\nWHERE branch_name = 'master'\r\nAND started_at BETWEEN (unix_timestamp(now()) - 604800) AND unix_timestamp(now()))) * 100) AS 'Percentage of all pipeline runs'\r\nFROM\r\n(SELECT pipeline_id, keyword_name, MAX(id), test_status, test_message\r\nFROM results\r\nWHERE branch_name = 'master' AND started_at BETWEEN (unix_timestamp(now()) - 604800) AND unix_timestamp(now()) AND test_status = 'FAIL'\r\nGROUP BY keyword_name, pipeline_id\r\nORDER BY pipeline_id, keyword_name, id) tmp\r\nGROUP BY keyword_name\r\nORDER BY count(keyword_name) DESC\r\nlimit 100;",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "How many times test/keyword failed (by a week)",
+      "type": "table"
+    }
+  ],
+  "refresh": "5m",
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "AT Statistic",
+  "uid": "-khe_Icnz",
+  "version": 29
+}
