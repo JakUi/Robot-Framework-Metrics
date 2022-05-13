@@ -2,7 +2,7 @@
 
 **SQL-запросы будут работать только если таблицы были созданы командами из этого репозитория в противном случае - правьте имена столбцов и таблиц.**
 
-### Панель General info
+### Stat `General info`
 #### Block A
 
 ```
@@ -80,7 +80,7 @@ FROM results
 WHERE pipeline_id = (SELECT MAX(pipeline_id) FROM results WHERE branch_name = 'master');
 ```
 
-### Диаграмма Passed to failed jobs
+### Pie Chart `Passed to failed jobs`
 
 #### Block A
 
@@ -124,7 +124,7 @@ WHERE id IN (
 );
 ```
 
-### Диаграмма Passed to failed tests
+### Pie Chart `Passed to failed tests`
 
 ### Block A
 
@@ -154,7 +154,7 @@ WHERE id IN (
 );
 ```
 
-### Диаграмма Error distribution
+### Pie Chart `Error distribution`
 
 ### Block A
 
@@ -184,7 +184,7 @@ WHERE id IN (
 ) AND response_code LIKE '40%'; 
 ```
 
-## Таблица Failed tests info
+## Datatable Panel `Failed tests info`
 
 ### Block A
 
