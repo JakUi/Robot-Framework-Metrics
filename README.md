@@ -1,6 +1,5 @@
 # Robot-Framework-Metrics
-Some code to create Grafana dashboards
-
+Немного кода для сбора метрик и создания отчётов
 ## Listeners
 Содержит код listeners (слушателей) для Robot Framework.
 
